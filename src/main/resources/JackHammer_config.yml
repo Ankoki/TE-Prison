@@ -1,0 +1,15 @@
+#plugin.author:Ankoki
+#plugin.url:https://github.com/Ankoki/TE-Prison
+#plugin.price:Free
+#
+dev-debug: false # Only used in development.
+Enchants:
+  JackHammer:
+    alias: "§8• §eJackHammer"
+    description: "Wipes an entire layer of a mine."
+    blocked-worlds:
+      - plots
+    price: 10
+    max: 100
+    event_map:
+      BlockBreakEvent: "HIGHEST"

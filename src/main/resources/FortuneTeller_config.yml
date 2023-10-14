@@ -1,0 +1,15 @@
+#plugin.author:Ankoki
+#plugin.url:https://github.com/Ankoki/TE-Prison
+#plugin.price:Free
+#
+dev-debug: false # Only used in development.
+Enchants:
+  FortuneTeller:
+    alias: "§8• §eFortune Teller"
+    description: "Gives extra money for mining blocks."
+    price: 10
+    max: 1000
+    blocked-worlds:
+      - plots
+    event_map:
+      BlockBreakEvent: "HIGHEST"

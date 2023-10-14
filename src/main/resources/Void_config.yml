@@ -1,0 +1,15 @@
+#plugin.author:Ankoki
+#plugin.url:https://github.com/Ankoki/TE-Prison
+#plugin.price:Free
+#
+dev-debug: false # Only used in development.
+Enchants:
+  Void:
+    alias: "§8• §eVoid"
+    description: "Has a tiiiiny chance to absorb a whole mine."
+    price: 10
+    max: 1
+    blocked-worlds:
+      - plots
+    event_map:
+      BlockBreakEvent: "HIGHEST"

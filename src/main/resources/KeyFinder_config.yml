@@ -1,0 +1,17 @@
+#plugin.author:Ankoki
+#plugin.url:https://github.com/Ankoki/TE-Prison
+#plugin.price:Free
+#
+dev-debug: false # Only used in development.
+Enchants:
+  KeyFinder:
+    alias: "§8• §eKey Finder"
+    description: "Gives keys for mining."
+    price: 10
+    max: 1000
+    blocked-worlds:
+      - plots
+    commands: # Use placeholder {PLAYER} for the players name.
+      - crate key give {PLAYER} pear 1
+    event_map:
+      BlockBreakEvent: "HIGHEST"

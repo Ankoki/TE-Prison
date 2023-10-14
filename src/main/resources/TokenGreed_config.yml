@@ -1,0 +1,17 @@
+#plugin.author:Ankoki
+#plugin.url:https://github.com/Ankoki/TE-Prison
+#plugin.price:Free
+#
+dev-debug: false # Only used in development.
+Enchants:
+  TokenGreed:
+    alias: "§8• §eToken Greed"
+    description: "Gives tokens for mining."
+    price: 10
+    max: 100
+    blocked-worlds:
+      - plots
+    default-tokens: 1.0
+    token-increase: 2.0 # Will be a random number between the numbers before and after this one.
+    event_map:
+      BlockBreakEvent: "HIGHEST"
