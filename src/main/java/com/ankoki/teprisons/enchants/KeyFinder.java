@@ -24,6 +24,7 @@ public class KeyFinder extends EnchantHandler {
 	private final Random random = new Random();
 	private final ConsoleCommandSender console = Bukkit.getConsoleSender();
 	private boolean debug;
+	private int upperBound;
 
 	public KeyFinder(TokenEnchantAPI api) throws InvalidTokenEnchantException {
 		super(api);
@@ -45,6 +46,10 @@ public class KeyFinder extends EnchantHandler {
 	public void loadConfig() {
 		super.loadConfig();
 		this.debug = this.getConfig().getBoolean("dev-debug");
+		Object object = this.getConfig().get("Enchants.KeyFinder.upper-bound");
+		try {
+			this.upperBound = (int) object;
+		} catch (NullPointerException | ClassCastException ex) { this.console.sendMessage("§cTE-Prison | this.upperBound not able to be cast from: " + object + " : loadConfig : KeyFinder"); }
 		this.commands.clear();
 		this.commands.addAll(this.getConfig().getStringList("Enchants.KeyFinder.commands"));
 		List<String> list = this.getConfig().getStringList("Enchants.KeyFinder.blocked-worlds");
@@ -56,6 +61,11 @@ public class KeyFinder extends EnchantHandler {
 	@EventPriorityHandler(key = "BlockBreakEvent")
 	public void onBlockBreak(BlockBreakEvent event) {
 		Player player = event.getPlayer();
+		if (Misc.isBlocked(player)) {
+			if (debug)
+				this.console.sendMessage("§eTE-Prison | Misc.isBlocked(player) == true : BlockBreakEvent : KeyFinder");
+			return;
+		}
 		if (this.blockedWorlds.contains(player.getWorld().getName())) {
 			if (debug)
 				this.console.sendMessage("§eTE-Prison | this.blockedWorlds.contains(player.getWorld()) == true : BlockBreakEvent : KeyFinder");
@@ -63,8 +73,12 @@ public class KeyFinder extends EnchantHandler {
 		}
 		CEHandler handler = api.getEnchantment("KeyFinder");
 		int level = handler.getCELevel(player);
-		int random = this.random.nextInt(1, 10000);
-		if (random <= 1 + (level * 2)) {
+		if (this.upperBound <= 1)
+			this.upperBound = 20000;
+		if (debug)
+			this.console.sendMessage("§eTE-Prison | this.upperbound = " + this.upperBound + " : BlockBreakEvent : KeyFinder");
+		int random = this.random.nextInt(1, this.upperBound);
+		if (random <= (1 + (level * 2))) {
 			if (debug)
 				this.console.sendMessage("§eTE-Prison | random <= 1 + (level * 2) == true : BlockBreakEvent : KeyFinder");
 			for (String command : this.commands) {

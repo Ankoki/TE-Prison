@@ -11,6 +11,7 @@ Enchants:
     max: 1000
     blocked-worlds:
       - plots
+    upper-bound: 20000
     commands: # Use placeholder {PLAYER} for the players name.
       - crate key give {PLAYER} pear 1
     event_map:
