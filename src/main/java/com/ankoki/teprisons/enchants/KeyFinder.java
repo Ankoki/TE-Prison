@@ -20,14 +20,26 @@ import java.util.Random;
 public class KeyFinder extends EnchantHandler {
 
 	private final TokenEnchantAPI api;
-	private final List<String> blockedWorlds = new ArrayList<>(), commands = new ArrayList<>();
+	private static final List<String> BLOCKED_WORLDS = new ArrayList<>(), COMMANDS = new ArrayList<>();
 	private final Random random = new Random();
 	private final ConsoleCommandSender console = Bukkit.getConsoleSender();
 	private boolean debug;
 	private int upperBound;
 
+	private static KeyFinder instance;
+
+	/**
+	 * Gets the instance of KeyFinder, used for calculating block break events
+	 * without heavy calls.
+	 * @return the instance.
+	 */
+	public static KeyFinder getInstance() {
+		return instance;
+	}
+
 	public KeyFinder(TokenEnchantAPI api) throws InvalidTokenEnchantException {
 		super(api);
+		instance = this;
 		this.api = api;
 		this.loadConfig();
 	}
@@ -50,11 +62,11 @@ public class KeyFinder extends EnchantHandler {
 		try {
 			this.upperBound = (int) object;
 		} catch (NullPointerException | ClassCastException ex) { this.console.sendMessage("§cTE-Prison | this.upperBound not able to be cast from: " + object + " : loadConfig : KeyFinder"); }
-		this.commands.clear();
-		this.commands.addAll(this.getConfig().getStringList("Enchants.KeyFinder.commands"));
+		COMMANDS.clear();
+		COMMANDS.addAll(this.getConfig().getStringList("Enchants.KeyFinder.commands"));
 		List<String> list = this.getConfig().getStringList("Enchants.KeyFinder.blocked-worlds");
-		this.blockedWorlds.clear();
-		this.blockedWorlds.addAll(list);
+		BLOCKED_WORLDS.clear();
+		BLOCKED_WORLDS.addAll(list);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -66,7 +78,7 @@ public class KeyFinder extends EnchantHandler {
 				this.console.sendMessage("§eTE-Prison | Misc.isBlocked(player) == true : BlockBreakEvent : KeyFinder");
 			return;
 		}
-		if (this.blockedWorlds.contains(player.getWorld().getName())) {
+		if (BLOCKED_WORLDS.contains(player.getWorld().getName())) {
 			if (debug)
 				this.console.sendMessage("§eTE-Prison | this.blockedWorlds.contains(player.getWorld()) == true : BlockBreakEvent : KeyFinder");
 			return;
@@ -81,7 +93,7 @@ public class KeyFinder extends EnchantHandler {
 		if (random <= (1 + (level * 2))) {
 			if (debug)
 				this.console.sendMessage("§eTE-Prison | random <= 1 + (level * 2) == true : BlockBreakEvent : KeyFinder");
-			for (String command : this.commands) {
+			for (String command : COMMANDS) {
 				String execute = command.replace("{PLAYER}", player.getName());
 				if (debug)
 					this.console.sendMessage("§eTE-Prison | command " + execute + " executed : BlockBreakEvent : KeyFinder");

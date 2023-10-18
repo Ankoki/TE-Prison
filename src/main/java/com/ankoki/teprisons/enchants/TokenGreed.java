@@ -1,6 +1,5 @@
 package com.ankoki.teprisons.enchants;
 
-import com.ankoki.teprisons.utils.Misc;
 import com.vk2gpz.tokenenchant.api.CEHandler;
 import com.vk2gpz.tokenenchant.api.EnchantHandler;
 import com.vk2gpz.tokenenchant.api.InvalidTokenEnchantException;
@@ -20,15 +19,27 @@ import java.util.Random;
 public class TokenGreed extends EnchantHandler {
 
 	private final TokenEnchantAPI api;
-	private final List<String> blockedWorlds = new ArrayList<>();
+	private final List<String> BLOCKED_WORLDS = new ArrayList<>();
 	private final Random random = new Random();
 	private final ConsoleCommandSender console = Bukkit.getConsoleSender();
 	private boolean debug;
 	private double defaultTokens;
 	private double tokenIncrease;
 
+	private static TokenGreed instance;
+
+	/**
+	 * Gets the instance of TokenGreed, used for calculating block break events
+	 * without heavy calls.
+	 * @return the instance.
+	 */
+	public static TokenGreed getInstance() {
+		return instance;
+	}
+
 	public TokenGreed(TokenEnchantAPI api) throws InvalidTokenEnchantException {
 		super(api);
+		instance = this;
 		this.api = api;
 		this.loadConfig();
 	}
@@ -50,15 +61,15 @@ public class TokenGreed extends EnchantHandler {
 		this.defaultTokens = this.getConfig().getDouble("Enchants.TokenGreed.default-tokens");
 		this.tokenIncrease = this.getConfig().getDouble("Enchants.TokenGreed.token-increase");
 		List<String> list = this.getConfig().getStringList("Enchants.TokenGreed.blocked-worlds");
-		this.blockedWorlds.clear();
-		this.blockedWorlds.addAll(list);
+		this.BLOCKED_WORLDS.clear();
+		this.BLOCKED_WORLDS.addAll(list);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	@EventPriorityHandler(key = "BlockBreakEvent")
 	public void onBlockBreak(BlockBreakEvent event) {
 		Player player = event.getPlayer();
-		if (this.blockedWorlds.contains(player.getWorld().getName())) {
+		if (BLOCKED_WORLDS.contains(player.getWorld().getName())) {
 			if (debug)
 				this.console.sendMessage("§eTE-Prison | this.blockedWorlds.contains(player.getWorld()) == true : BlockBreakEvent : TokenGreed");
 			return;

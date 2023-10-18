@@ -1,10 +1,16 @@
 package com.ankoki.teprisons.utils;
 
+import com.ankoki.teprisons.enchants.FortuneTeller;
+import com.ankoki.teprisons.enchants.KeyFinder;
+import com.ankoki.teprisons.enchants.TokenGreed;
+import com.vk2gpz.tokenenchant.api.CEHandler;
+import com.vk2gpz.tokenenchant.api.TokenEnchantAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.BlockBreakEvent;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,6 +19,7 @@ import java.util.List;
 public class Misc {
 
 	private static final List<Player> blocked = new ArrayList<>();
+	private static final TokenEnchantAPI api = TokenEnchantAPI.getInstance();
 
 	/**
 	 * Blocks a player from using automated block breaking tasks.
@@ -81,6 +88,35 @@ public class Misc {
 				for (int y = bottomBlockY; y <= topBlockY; y++)
 					blocks.add(locationOne.getWorld().getBlockAt(x, y, z));
 		return blocks;
+	}
+
+	/**
+	 * Executes all enchants.
+	 * Used by Void and JackHammer.
+	 *
+	 * @param player the player.
+	 * @param blocks the blocks.
+	 */
+	public static void applyEnchants(Player player, List<Block> blocks) {
+		BlockBreakEvent event;
+		for (Block block : blocks) {
+			event = new BlockBreakEvent(block, player);
+			FortuneTeller.getInstance().onBlockBreak(event);
+			KeyFinder.getInstance().onBlockBreak(event);
+			TokenGreed.getInstance().onBlockBreak(event);
+		}
+	}
+
+	/**
+	 * Gets the level of the given enchantment for the given player.
+	 *
+	 * @param player the player.
+	 * @param enchant the string.
+	 * @return the enchantment level.
+	 */
+	public static int getEnchantmentLevel(Player player, String enchant) {
+		CEHandler handler = api.getEnchantment(enchant);
+		return handler.getCELevel(player);
 	}
 
 }

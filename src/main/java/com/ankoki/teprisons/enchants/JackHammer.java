@@ -1,7 +1,13 @@
 package com.ankoki.teprisons.enchants;
 
 import com.ankoki.teprisons.utils.Misc;
+import com.fastasyncworldedit.core.Fawe;
+import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
@@ -14,7 +20,6 @@ import com.vk2gpz.tokenenchant.api.TokenEnchantAPI;
 import com.vk2gpz.tokenenchant.event.EventPriorityHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.ConsoleCommandSender;
@@ -22,6 +27,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
+import tech.mcprison.prison.Prison;
+import tech.mcprison.prison.mines.PrisonMines;
+import tech.mcprison.prison.mines.data.Mine;
+import tech.mcprison.prison.spigot.game.SpigotPlayer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -114,11 +123,26 @@ public class JackHammer extends EnchantHandler {
 				pointOne.setY(block.getY());
 				pointTwo.setY(block.getY());
 				Misc.block(player);
-				for (Block b : Misc.getBlocks(pointOne, pointTwo)) {
-					if (player.isOnline() && b.getType() != Material.AIR)
-						player.breakBlock(b);
+				List<Block> blocks = Misc.getBlocks(pointOne, pointTwo);
+				Misc.applyEnchants(player, blocks);
+				try (EditSession editSession = Fawe.instance().getWorldEdit().newEditSession(BukkitAdapter.adapt(world))) {
+					CuboidRegion reg = new CuboidRegion(BukkitAdapter.adapt(world),
+							BlockVector3.at(pointOne.getX(), pointOne.getY(), pointOne.getZ()),
+							BlockVector3.at(pointTwo.getX(), pointTwo.getY(), pointTwo.getZ()));
+					editSession.setBlocks((Region) reg, BlockTypes.AIR);
+					editSession.flushQueue();
 				}
 				Misc.unblock(player);
+				PrisonMines mines = (PrisonMines) Prison.get().getModuleManager().getModule(PrisonMines.MODULE_NAME);
+				SpigotPlayer sPlayer = new SpigotPlayer(player);
+				Mine mine = mines.findMineLocation(sPlayer);
+				if (mine == null) {
+					if (this.debug)
+						this.console.sendMessage("§eTE-Prison | mine == null : BlockBreakEvent : JackHammer");
+					break;
+				}
+				mine.checkZeroBlockReset();
+				mine.submitMineSweeperTask();
 			}
 			break;
 		}

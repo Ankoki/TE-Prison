@@ -22,12 +22,24 @@ import java.util.*;
 public class FortuneTeller extends EnchantHandler {
 
 	private final TokenEnchantAPI api;
-	private final List<String> blockedWorlds = new ArrayList<>();
+	private static final List<String> BLOCKED_WORLDS = new ArrayList<>();
 	private final ConsoleCommandSender console = Bukkit.getConsoleSender();
 	private boolean debug;
 
+	private static FortuneTeller instance;
+
+	/**
+	 * Gets the instance of FortuneTeller, used for calculating block break events
+	 * without heavy calls.
+	 * @return the instance.
+	 */
+	public static FortuneTeller getInstance() {
+		return instance;
+	}
+
 	public FortuneTeller(TokenEnchantAPI api) throws InvalidTokenEnchantException {
 		super(api);
+		instance = this;
 		this.api = api;
 		this.loadConfig();
 	}
@@ -47,15 +59,15 @@ public class FortuneTeller extends EnchantHandler {
 		super.loadConfig();
 		this.debug = this.getConfig().getBoolean("dev-debug");
 		List<String> list = this.getConfig().getStringList("Enchants.Fortune.blocked-worlds");
-		this.blockedWorlds.clear();
-		this.blockedWorlds.addAll(list);
+		BLOCKED_WORLDS.clear();
+		BLOCKED_WORLDS.addAll(list);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	@EventPriorityHandler(key = "BlockBreakEvent")
 	public void onBlockBreak(BlockBreakEvent event) {
 		Player player = event.getPlayer();
-		if (this.blockedWorlds.contains(player.getWorld().getName())) {
+		if (BLOCKED_WORLDS.contains(player.getWorld().getName())) {
 			if (debug)
 				this.console.sendMessage("§eTE-Prison | this.blockedWorlds.contains(player.getWorld()) == true : BlockBreakEvent : Fortune");
 			return;
