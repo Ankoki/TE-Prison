@@ -5,16 +5,15 @@ import com.vk2gpz.tokenenchant.api.EnchantHandler;
 import com.vk2gpz.tokenenchant.api.InvalidTokenEnchantException;
 import com.vk2gpz.tokenenchant.api.TokenEnchantAPI;
 import com.vk2gpz.tokenenchant.event.EventPriorityHandler;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import tech.mcprison.prison.cryptomorin.xseries.XMaterial;
-import tech.mcprison.prison.ranks.PrisonRanks;
-import tech.mcprison.prison.ranks.data.RankPlayer;
-import tech.mcprison.prison.spigot.game.SpigotPlayer;
 import tech.mcprison.prison.spigot.sellall.SellAllUtil;
 
 import java.util.*;
@@ -23,8 +22,10 @@ public class FortuneTeller extends EnchantHandler {
 
 	private final TokenEnchantAPI api;
 	private static final List<String> BLOCKED_WORLDS = new ArrayList<>();
+	private Economy economy;
 	private final ConsoleCommandSender console = Bukkit.getConsoleSender();
 	private boolean debug;
+	private boolean disabled = false;
 
 	private static FortuneTeller instance;
 
@@ -41,7 +42,19 @@ public class FortuneTeller extends EnchantHandler {
 		super(api);
 		instance = this;
 		this.api = api;
-		this.loadConfig();
+		if (Bukkit.getServer().getPluginManager().getPlugin("Vault") == null) {
+			console.sendMessage("§cTE-Prison | Vault was not found. FortuneTeller will not work.");
+			disabled = true;
+		} else {
+			RegisteredServiceProvider<Economy> rsp = Bukkit.getServer().getServicesManager().getRegistration(Economy.class);
+			if (rsp == null) {
+				console.sendMessage("§cTE-Prison | RegisteredServiceProvider<Economy> was not found. FortuneTeller will not work.");
+				disabled = true;
+			} else {
+				this.economy = rsp.getProvider();
+				this.loadConfig();
+			}
+		}
 	}
 
 	@Override
@@ -66,10 +79,15 @@ public class FortuneTeller extends EnchantHandler {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	@EventPriorityHandler(key = "BlockBreakEvent")
 	public void onBlockBreak(BlockBreakEvent event) {
+		if (this.disabled) {
+			if (this.debug)
+				this.console.sendMessage("§eTE-Prison | this.disabled == true : BlockBreakEvent : FortuneTeller");
+			return;
+		}
 		Player player = event.getPlayer();
 		if (BLOCKED_WORLDS.contains(player.getWorld().getName())) {
 			if (debug)
-				this.console.sendMessage("§eTE-Prison | this.blockedWorlds.contains(player.getWorld()) == true : BlockBreakEvent : Fortune");
+				this.console.sendMessage("§eTE-Prison | this.blockedWorlds.contains(player.getWorld()) == true : BlockBreakEvent : FortuneTeller");
 			return;
 		}
 		CEHandler handler = api.getEnchantment("FortuneTeller");
@@ -79,13 +97,11 @@ public class FortuneTeller extends EnchantHandler {
 		map.put(material, 1);
 		double amount = SellAllUtil.get().getSellMoney(player, map);
 		if (debug)
-			this.console.sendMessage("§eTE-Prison | SellAllUtil.get().getSellMoney(player, map) = " + amount + ": BlockBreakEvent : Fortune");
+			this.console.sendMessage("§eTE-Prison | SellAllUtil.get().getSellMoney(player, map) = " + amount + ": BlockBreakEvent : FortuneTeller");
 		amount *= 1 + (level / 10D);
 		if (debug)
-			this.console.sendMessage("§eTE-Prison | amount *= 1 + (level / 10D) = " + amount + ": BlockBreakEvent : Fortune");
-		SpigotPlayer sPlayer = new SpigotPlayer(player);
-		RankPlayer rPlayer = PrisonRanks.getInstance().getPlayerManager().getPlayer(sPlayer.getUUID(), sPlayer.getName());
-		rPlayer.addBalance(amount);
+			this.console.sendMessage("§eTE-Prison | amount *= 1 + (level / 10D) = " + amount + ": BlockBreakEvent : FortuneTeller");
+		this.economy.depositPlayer(player, amount);
 	}
 
 }
