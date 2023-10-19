@@ -17,6 +17,7 @@ import tech.mcprison.prison.cryptomorin.xseries.XMaterial;
 import tech.mcprison.prison.spigot.sellall.SellAllUtil;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 public class FortuneTeller extends EnchantHandler {
 
@@ -79,29 +80,31 @@ public class FortuneTeller extends EnchantHandler {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	@EventPriorityHandler(key = "BlockBreakEvent")
 	public void onBlockBreak(BlockBreakEvent event) {
-		if (this.disabled) {
-			if (this.debug)
-				this.console.sendMessage("§eTE-Prison | this.disabled == true : BlockBreakEvent : FortuneTeller");
-			return;
-		}
-		Player player = event.getPlayer();
-		if (BLOCKED_WORLDS.contains(player.getWorld().getName())) {
+		CompletableFuture.runAsync(() -> {
+			if (this.disabled) {
+				if (this.debug)
+					this.console.sendMessage("§eTE-Prison | this.disabled == true : BlockBreakEvent : FortuneTeller");
+				return;
+			}
+			Player player = event.getPlayer();
+			if (BLOCKED_WORLDS.contains(player.getWorld().getName())) {
+				if (debug)
+					this.console.sendMessage("§eTE-Prison | this.blockedWorlds.contains(player.getWorld()) == true : BlockBreakEvent : FortuneTeller");
+				return;
+			}
+			CEHandler handler = api.getEnchantment("FortuneTeller");
+			int level = handler.getCELevel(player);
+			XMaterial material = XMaterial.matchXMaterial(event.getBlock().getType());
+			HashMap<XMaterial, Integer> map = new HashMap<>();
+			map.put(material, 1);
+			double amount = SellAllUtil.get().getSellMoney(player, map);
 			if (debug)
-				this.console.sendMessage("§eTE-Prison | this.blockedWorlds.contains(player.getWorld()) == true : BlockBreakEvent : FortuneTeller");
-			return;
-		}
-		CEHandler handler = api.getEnchantment("FortuneTeller");
-		int level = handler.getCELevel(player);
-		XMaterial material = XMaterial.matchXMaterial(event.getBlock().getType());
-		HashMap<XMaterial, Integer> map = new HashMap<>();
-		map.put(material, 1);
-		double amount = SellAllUtil.get().getSellMoney(player, map);
-		if (debug)
-			this.console.sendMessage("§eTE-Prison | SellAllUtil.get().getSellMoney(player, map) = " + amount + ": BlockBreakEvent : FortuneTeller");
-		amount *= 1 + (level / 10D);
-		if (debug)
-			this.console.sendMessage("§eTE-Prison | amount *= 1 + (level / 10D) = " + amount + ": BlockBreakEvent : FortuneTeller");
-		this.economy.depositPlayer(player, amount);
+				this.console.sendMessage("§eTE-Prison | SellAllUtil.get().getSellMoney(player, map) = " + amount + ": BlockBreakEvent : FortuneTeller");
+			amount *= 1 + (level / 10D);
+			if (debug)
+				this.console.sendMessage("§eTE-Prison | amount *= 1 + (level / 10D) = " + amount + ": BlockBreakEvent : FortuneTeller");
+			this.economy.depositPlayer(player, amount);
+		});
 	}
 
 }

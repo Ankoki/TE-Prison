@@ -15,6 +15,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
 
 public class TokenGreed extends EnchantHandler {
 
@@ -68,26 +69,28 @@ public class TokenGreed extends EnchantHandler {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	@EventPriorityHandler(key = "BlockBreakEvent")
 	public void onBlockBreak(BlockBreakEvent event) {
-		Player player = event.getPlayer();
-		if (BLOCKED_WORLDS.contains(player.getWorld().getName())) {
-			if (debug)
-				this.console.sendMessage("§eTE-Prison | this.blockedWorlds.contains(player.getWorld()) == true : BlockBreakEvent : TokenGreed");
-			return;
-		}
-		CEHandler handler = api.getEnchantment("TokenGreed");
-		int level = handler.getCELevel(player);
-		if (level <= 1) {
-			if (debug)
-				this.console.sendMessage("§eTE-Prison | level <= 1 && defaultTokens == " + defaultTokens + " == true : BlockBreakEvent : TokenGreed");
-			this.api.addTokens(player, defaultTokens);
-		} else {
-			int above = (int) (tokenIncrease + (level * 3));
-			int below = (int) (tokenIncrease - 1);
-			int random = this.random.nextInt(below, above + 1);
-			if (debug)
-				this.console.sendMessage("§eTE-Prison | random == " + random + " && random + (level * 2) == " + random + (level * 2) + " == true : BlockBreakEvent : TokenGreed");
-			this.api.addTokens(player, random);
-		}
+		CompletableFuture.runAsync(() -> {
+			Player player = event.getPlayer();
+			if (BLOCKED_WORLDS.contains(player.getWorld().getName())) {
+				if (debug)
+					this.console.sendMessage("§eTE-Prison | this.blockedWorlds.contains(player.getWorld()) == true : BlockBreakEvent : TokenGreed");
+				return;
+			}
+			CEHandler handler = api.getEnchantment("TokenGreed");
+			int level = handler.getCELevel(player);
+			if (level <= 1) {
+				if (debug)
+					this.console.sendMessage("§eTE-Prison | level <= 1 && defaultTokens == " + defaultTokens + " == true : BlockBreakEvent : TokenGreed");
+				Bukkit.getScheduler().runTask(this.api, () -> this.api.addTokens(player, defaultTokens));
+			} else {
+				int above = (int) (tokenIncrease + (level * 3));
+				int below = (int) (tokenIncrease - 1);
+				int random = this.random.nextInt(below, above + 1);
+				if (debug)
+					this.console.sendMessage("§eTE-Prison | random == " + random + " && random + (level * 2) == " + random + (level * 2) + " == true : BlockBreakEvent : TokenGreed");
+				Bukkit.getScheduler().runTask(this.api, () -> this.api.addTokens(player, random));
+			}
+		});
 	}
 
 }

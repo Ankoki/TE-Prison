@@ -16,6 +16,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
 
 public class KeyFinder extends EnchantHandler {
 
@@ -72,34 +73,38 @@ public class KeyFinder extends EnchantHandler {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	@EventPriorityHandler(key = "BlockBreakEvent")
 	public void onBlockBreak(BlockBreakEvent event) {
-		Player player = event.getPlayer();
-		if (Misc.isBlocked(player)) {
-			if (debug)
-				this.console.sendMessage("§eTE-Prison | Misc.isBlocked(player) == true : BlockBreakEvent : KeyFinder");
-			return;
-		}
-		if (BLOCKED_WORLDS.contains(player.getWorld().getName())) {
-			if (debug)
-				this.console.sendMessage("§eTE-Prison | this.blockedWorlds.contains(player.getWorld()) == true : BlockBreakEvent : KeyFinder");
-			return;
-		}
-		CEHandler handler = api.getEnchantment("KeyFinder");
-		int level = handler.getCELevel(player);
-		if (this.upperBound <= 1)
-			this.upperBound = 20000;
-		if (debug)
-			this.console.sendMessage("§eTE-Prison | this.upperbound = " + this.upperBound + " : BlockBreakEvent : KeyFinder");
-		int random = this.random.nextInt(1, this.upperBound);
-		if (random <= (1 + (level * 2))) {
-			if (debug)
-				this.console.sendMessage("§eTE-Prison | random <= 1 + (level * 2) == true : BlockBreakEvent : KeyFinder");
-			for (String command : COMMANDS) {
-				String execute = command.replace("{PLAYER}", player.getName());
+		CompletableFuture.runAsync(() -> {
+			Player player = event.getPlayer();
+			if (Misc.isBlocked(player)) {
 				if (debug)
-					this.console.sendMessage("§eTE-Prison | command " + execute + " executed : BlockBreakEvent : KeyFinder");
-				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), execute);
+					this.console.sendMessage("§eTE-Prison | Misc.isBlocked(player) == true : BlockBreakEvent : KeyFinder");
+				return;
 			}
-		}
+			if (BLOCKED_WORLDS.contains(player.getWorld().getName())) {
+				if (debug)
+					this.console.sendMessage("§eTE-Prison | this.blockedWorlds.contains(player.getWorld()) == true : BlockBreakEvent : KeyFinder");
+				return;
+			}
+			CEHandler handler = api.getEnchantment("KeyFinder");
+			int level = handler.getCELevel(player);
+			if (this.upperBound <= 1)
+				this.upperBound = 20000;
+			if (debug)
+				this.console.sendMessage("§eTE-Prison | this.upperbound = " + this.upperBound + " : BlockBreakEvent : KeyFinder");
+			int random = this.random.nextInt(1, this.upperBound);
+			if (random <= (1 + (level * 1.5))) {
+				if (debug)
+					this.console.sendMessage("§eTE-Prison | random <= 1 + (level * 2) == true : BlockBreakEvent : KeyFinder");
+				Bukkit.getScheduler().runTask(TokenEnchantAPI.getInstance(), () -> {
+					for (String command : COMMANDS) {
+						String execute = command.replace("{PLAYER}", player.getName());
+						if (debug)
+							this.console.sendMessage("§eTE-Prison | command " + execute + " executed : BlockBreakEvent : KeyFinder");
+						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), execute);
+					}
+				});
+			}
+		});
 	}
 
 }
