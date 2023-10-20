@@ -126,6 +126,7 @@ public class Void extends EnchantHandler {
 					FortuneTeller.getInstance().onBlockBreak(e);
 					KeyFinder.getInstance().onBlockBreak(e);
 					TokenGreed.getInstance().onBlockBreak(e);
+					MysticLeveler.getInstance().onBlockBreak(event);
 				}
 				try (EditSession editSession = Fawe.instance().getWorldEdit().newEditSession(BukkitAdapter.adapt(world))) {
 					CuboidRegion reg = new CuboidRegion(BukkitAdapter.adapt(world),
