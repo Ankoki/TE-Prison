@@ -1,6 +1,6 @@
 package com.ankoki.teprisons.enchants;
 
-import com.vk2gpz.tokenenchant.api.CEHandler;
+import com.ankoki.teprisons.utils.Misc;
 import com.vk2gpz.tokenenchant.api.EnchantHandler;
 import com.vk2gpz.tokenenchant.api.InvalidTokenEnchantException;
 import com.vk2gpz.tokenenchant.api.TokenEnchantAPI;
@@ -74,8 +74,7 @@ public class TokenGreed extends EnchantHandler {
 				this.console.sendMessage("§eTE-Prison | this.blockedWorlds.contains(player.getWorld()) == true : BlockBreakEvent : TokenGreed");
 			return;
 		}
-		CEHandler handler = api.getEnchantment("TokenGreed");
-		int level = handler.getCELevel(player);
+		int level = Misc.getEnchantmentLevel(player, "TokenGreed");
 		if (level <= 1) {
 			if (debug)
 				this.console.sendMessage("§eTE-Prison | level <= 1 && defaultTokens == " + defaultTokens + " == true : BlockBreakEvent : TokenGreed");

@@ -1,7 +1,6 @@
 package com.ankoki.teprisons.enchants;
 
 import com.ankoki.teprisons.utils.Misc;
-import com.vk2gpz.tokenenchant.api.CEHandler;
 import com.vk2gpz.tokenenchant.api.EnchantHandler;
 import com.vk2gpz.tokenenchant.api.InvalidTokenEnchantException;
 import com.vk2gpz.tokenenchant.api.TokenEnchantAPI;
@@ -75,6 +74,9 @@ public class KeyFinder extends EnchantHandler {
 	public void onBlockBreak(BlockBreakEvent event) {
 		CompletableFuture.runAsync(() -> {
 			Player player = event.getPlayer();
+			int level = Misc.getEnchantmentLevel(player, "KeyFinder");
+			if (level <= 0)
+				return;
 			if (Misc.isBlocked(player)) {
 				if (debug)
 					this.console.sendMessage("§eTE-Prison | Misc.isBlocked(player) == true : BlockBreakEvent : KeyFinder");
@@ -85,8 +87,6 @@ public class KeyFinder extends EnchantHandler {
 					this.console.sendMessage("§eTE-Prison | this.blockedWorlds.contains(player.getWorld()) == true : BlockBreakEvent : KeyFinder");
 				return;
 			}
-			CEHandler handler = api.getEnchantment("KeyFinder");
-			int level = handler.getCELevel(player);
 			if (this.upperBound <= 1)
 				this.upperBound = 20000;
 			if (debug)

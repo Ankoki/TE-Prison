@@ -12,9 +12,12 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
+import tech.mcprison.prison.cryptomorin.xseries.XMaterial;
+import tech.mcprison.prison.spigot.sellall.SellAllUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 public class Misc {
@@ -52,6 +55,18 @@ public class Misc {
 	}
 
 	/**
+	 * Attempts to parse a string into an integer.
+	 *
+	 * @param string the string to parse.
+	 * @return the parsed integer, or -1 if not able to do so.
+	 */
+	public static int parseInt(String string) {
+		try {
+			return Integer.parseInt(string);
+		} catch (NumberFormatException ex) { return -1; }
+	}
+
+	/**
 	 * Parses a string list into a list of worlds.
 	 *
 	 * @param strings the strings to transform.
@@ -72,22 +87,23 @@ public class Misc {
 	/**
 	 * Gets a list of blocks from one location to another.
 	 *
-	 * @param locationOne the first point.
-	 * @param locationTwo the second point.
+	 * @param pointOne the first point.
+	 * @param pointTwo the second point.
 	 * @return the blocks between the two points.
 	 */
-	public static List<Block> getBlocks(Location locationOne, Location locationTwo) {
+	public static List<Block> getBlocks(Location pointOne, Location pointTwo) {
 		List<Block> blocks = new ArrayList<>();
-		int topBlockX = (Math.max(locationOne.getBlockX(), locationTwo.getBlockX()));
-		int bottomBlockX = (Math.min(locationOne.getBlockX(), locationTwo.getBlockX()));
-		int topBlockY = (Math.max(locationOne.getBlockY(), locationTwo.getBlockY()));
-		int bottomBlockY = (Math.min(locationOne.getBlockY(), locationTwo.getBlockY()));
-		int topBlockZ = (Math.max(locationOne.getBlockZ(), locationTwo.getBlockZ()));
-		int bottomBlockZ = (Math.min(locationOne.getBlockZ(), locationTwo.getBlockZ()));
-		for (int x = bottomBlockX; x <= topBlockX; x++)
-			for (int z = bottomBlockZ; z <= topBlockZ; z++)
-				for (int y = bottomBlockY; y <= topBlockY; y++)
-					blocks.add(locationOne.getWorld().getBlockAt(x, y, z));
+		int maxX = Math.max(pointOne.getBlockX(), pointTwo.getBlockX());
+		int minX = Math.min(pointOne.getBlockX(), pointTwo.getBlockX());
+		int maxY = Math.max(pointOne.getBlockY(), pointTwo.getBlockY());
+		int minY = Math.min(pointOne.getBlockY(), pointTwo.getBlockY());
+		int maxZ = Math.max(pointOne.getBlockZ(), pointTwo.getBlockZ());
+		int minZ = Math.min(pointOne.getBlockZ(), pointTwo.getBlockZ());
+		World world = pointOne.getWorld();
+		for (int x = minX; x <= maxX; x++)
+			for (int z = minZ; z <= maxZ; z++)
+				for (int y = minY; y <= maxY; y++)
+					blocks.add(world.getBlockAt(x, y, z));
 		return blocks;
 	}
 
@@ -107,6 +123,83 @@ public class Misc {
 			TokenGreed.getInstance().onBlockBreak(event);
 			MysticLeveler.getInstance().onBlockBreak(event);
 		}
+	}
+
+	/**
+	 * Gets blocks which would be obtained through a laser.
+	 *
+	 * @param start the block that proceed this enchants.
+	 * @param pointOne the smallest point of this mine.
+	 * @param pointTwo the largest point of this mine.
+	 * @return the blocks to be affected.
+	 */
+	public static List<Block> getLaserBlocks(Location start, Location pointOne, Location pointTwo) {
+		List<Block> blocks = new ArrayList<>();
+		int maxX = Math.max(pointOne.getBlockX(), pointTwo.getBlockX());
+		int minX = Math.min(pointOne.getBlockX(), pointTwo.getBlockX());
+		int maxY = Math.max(pointOne.getBlockY(), pointTwo.getBlockY());
+		int minY = Math.min(pointOne.getBlockY(), pointTwo.getBlockY());
+		int maxZ = Math.max(pointOne.getBlockZ(), pointTwo.getBlockZ());
+		int minZ = Math.min(pointOne.getBlockZ(), pointTwo.getBlockZ());
+		int startX = start.getBlockX();
+		int startY = start.getBlockY();
+		int startZ = start.getBlockZ();
+		World world = pointOne.getWorld();
+		for (int x = minX; x <= maxX; x++)
+			blocks.add(world.getBlockAt(x, startY, startZ));
+		for (int y = minY; y <= maxY; y++)
+			blocks.add(world.getBlockAt(startX, y, startZ));
+		for (int z = minZ; z <= maxZ; z++)
+			blocks.add(world.getBlockAt(startX, startY, z));
+		return blocks;
+	}
+
+	/**
+	 * Gets the prison value of a list of blocks.
+	 *
+	 * @param player the player to check for.
+	 * @param blocks the blocks to check.
+	 * @return the amount these blocks are worth.
+	 */
+	public static double getValue(Player player, List<Block> blocks) {
+		HashMap<XMaterial, Integer> map = new HashMap<>();
+		for (Block block : blocks) {
+			XMaterial material = XMaterial.matchXMaterial(block.getType());
+			if (map.containsKey(material)) {
+				int amount = map.get(material);
+				map.put(material, amount + 1);
+			} else
+				map.put(material, 1);
+		}
+		return SellAllUtil.get().getSellMoney(player, map);
+	}
+
+	/**
+	 * Gets a hollow cube. Used for spawning particles around a block outline.
+	 *
+	 * @param location the location of the block.
+	 * @param step the distance of the particles. Should default at 0.1.
+	 * @return a list of the locations to spawn.
+	 */
+	public static List<Location> getHollowCube(Location location, double step) {
+		List<Location> result = new ArrayList<>();
+		World world = location.getWorld();
+		double[] xArr = {location.getBlockX(), location.getBlockX() + 1};
+		double[] yArr = {location.getBlockY(), location.getBlockY() + 1};
+		double[] zArr = {location.getBlockZ(), location.getBlockZ() + 1};
+		for (double x = xArr[0]; x < xArr[1]; x += step)
+			for (double y : yArr)
+				for (double z : zArr)
+					result.add(new Location(world, x, y, z));
+		for (double y = yArr[0]; y < yArr[1]; y += step)
+			for (double x : xArr)
+				for (double z : zArr)
+					result.add(new Location(world, x, y, z));
+		for (double z = zArr[0]; z < zArr[1]; z += step)
+			for (double x : xArr)
+				for (double y : yArr)
+					result.add(new Location(world, x, y, z));
+		return result;
 	}
 
 	/**

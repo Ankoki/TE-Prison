@@ -4,12 +4,13 @@
 #
 dev-debug: false # Only used in development.
 Enchants:
-  MysticLeveler:
-    alias: "§8• §eMystic Leveler"
-    description: "Has a tiny chance to upgrade any non prestige-locked enchant by the level of this enchant."
+  VirtualLaser:
+    alias: "§8• §eVirtual Laser"
+    description: "Has a chance to virtually break all blocks vertically and horizontally from the triggered block."
     price: 10
-    max: 10
-    upper-bound: 1000000
+    max: 1000
+    colour: "106, 255, 0"
+    size: 1.5
     blocked-worlds:
       - plots
     event_map:

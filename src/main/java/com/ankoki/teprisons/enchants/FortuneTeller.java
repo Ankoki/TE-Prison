@@ -1,6 +1,6 @@
 package com.ankoki.teprisons.enchants;
 
-import com.vk2gpz.tokenenchant.api.CEHandler;
+import com.ankoki.teprisons.utils.Misc;
 import com.vk2gpz.tokenenchant.api.EnchantHandler;
 import com.vk2gpz.tokenenchant.api.InvalidTokenEnchantException;
 import com.vk2gpz.tokenenchant.api.TokenEnchantAPI;
@@ -13,11 +13,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
-import tech.mcprison.prison.cryptomorin.xseries.XMaterial;
-import tech.mcprison.prison.spigot.sellall.SellAllUtil;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class FortuneTeller extends EnchantHandler {
@@ -87,21 +84,17 @@ public class FortuneTeller extends EnchantHandler {
 			return;
 		}
 		Player player = event.getPlayer();
+		int level = Misc.getEnchantmentLevel(player, "FortuneTeller");
+		if (level <= 0)
+			return;
 		if (BLOCKED_WORLDS.contains(player.getWorld().getName())) {
 			if (debug)
 				this.console.sendMessage("§eTE-Prison | this.blockedWorlds.contains(player.getWorld()) == true : BlockBreakEvent : FortuneTeller");
 			return;
 		}
-		CEHandler handler = api.getEnchantment("FortuneTeller");
-		int level = handler.getCELevel(player);
-		XMaterial material = XMaterial.matchXMaterial(event.getBlock().getType());
+		double amount = Misc.getValue(player, List.of(event.getBlock()));
 		if (debug)
-			this.console.sendMessage("§eTE-Prison | XMaterial material = " + material.name() + " : BlockBreakEvent : FortuneTeller");
-		HashMap<XMaterial, Integer> map = new HashMap<>();
-		map.put(material, 1);
-		double amount = SellAllUtil.get().getSellMoney(player, map);
-		if (debug)
-			this.console.sendMessage("§eTE-Prison | SellAllUtil.get().getSellMoney(player, map) = " + amount + ": BlockBreakEvent : FortuneTeller");
+			this.console.sendMessage("§eTE-Prison | Misc.getValue(player, List.of(event.getBlock()) = " + amount + ": BlockBreakEvent : FortuneTeller");
 		amount *= 1 + (level / 10D);
 		if (debug)
 			this.console.sendMessage("§eTE-Prison | amount *= 1 + (level / 10D) = " + amount + ": BlockBreakEvent : FortuneTeller");

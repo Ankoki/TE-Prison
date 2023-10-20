@@ -13,7 +13,6 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
-import com.vk2gpz.tokenenchant.api.CEHandler;
 import com.vk2gpz.tokenenchant.api.EnchantHandler;
 import com.vk2gpz.tokenenchant.api.InvalidTokenEnchantException;
 import com.vk2gpz.tokenenchant.api.TokenEnchantAPI;
@@ -76,12 +75,15 @@ public class Void extends EnchantHandler {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	@EventPriorityHandler(key = "BlockBreakEvent")
 	private void onBlockBreak(BlockBreakEvent event) {
+		Player player = event.getPlayer();
+		int level = Misc.getEnchantmentLevel(player, "Void");
+		if (level <= 0)
+			return;
 		if (this.container == null) {
 			if (this.debug)
 				this.console.sendMessage("§eTE-Prison | this.container == null: BlockBreakEvent : Void");
 			return;
 		}
-		Player player = event.getPlayer();
 		if (Misc.isBlocked(player)) {
 			if (this.debug)
 				this.console.sendMessage("§eTE-Prison | Misc.isBlocked(event.getPlayer()) == true : BlockBreakEvent : Void");
@@ -92,13 +94,6 @@ public class Void extends EnchantHandler {
 		if (this.blockedWorlds.contains(world.getName())) {
 			if (this.debug)
 				this.console.sendMessage("§eTE-Prison | this.blockedWorlds.contains(world) = true : BlockBreakEvent : Void");
-			return;
-		}
-		CEHandler handler = api.getEnchantment("Void");
-		int level = handler.getCELevel(player);
-		if (level <= 0) {
-			if (this.debug)
-				this.console.sendMessage("§eTE-Prison | handler.getCELevel(event.getPlayer()) <= 0 : BlockBreakEvent : Void");
 			return;
 		}
 		RegionQuery query = container.createQuery();

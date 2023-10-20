@@ -80,6 +80,9 @@ public class MysticLeveler extends EnchantHandler {
 	public void onBlockBreak(BlockBreakEvent event) {
 		CompletableFuture.runAsync(() -> {
 			Player player = event.getPlayer();
+			int level = Misc.getEnchantmentLevel(player, "MysticLeveler");
+			if (level <= 0)
+				return;
 			if (Misc.isBlocked(player)) {
 				if (debug)
 					this.console.sendMessage("§eTE-Prison | Misc.isBlocked(player) == true : BlockBreakEvent : MysticLeveler");
@@ -90,8 +93,6 @@ public class MysticLeveler extends EnchantHandler {
 					this.console.sendMessage("§eTE-Prison | this.blockedWorlds.contains(player.getWorld()) == true : BlockBreakEvent : MysticLeveler");
 				return;
 			}
-			CEHandler handler = api.getEnchantment("KeyFinder");
-			int level = handler.getCELevel(player);
 			if (this.upperBound <= 1)
 				this.upperBound = 1000000;
 			if (debug)
