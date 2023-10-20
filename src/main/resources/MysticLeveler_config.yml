@@ -1,0 +1,16 @@
+#plugin.author:Ankoki
+#plugin.url:https://github.com/Ankoki/TE-Prison
+#plugin.price:Free
+#
+dev-debug: false # Only used in development.
+Enchants:
+  FortuneTeller:
+    alias: "§8• §eMystic Leveler"
+    description: "Has a tiny chance to upgrade any non prestige-locked enchant by the level of this enchant."
+    price: 10
+    max: 10
+    upper-bound: 1000000
+    blocked-worlds:
+      - plots
+    event_map:
+      BlockBreakEvent: "HIGHEST"

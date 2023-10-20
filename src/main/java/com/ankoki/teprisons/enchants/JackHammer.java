@@ -124,7 +124,13 @@ public class JackHammer extends EnchantHandler {
 				pointTwo.setY(block.getY());
 				Misc.block(player);
 				List<Block> blocks = Misc.getBlocks(pointOne, pointTwo);
-				Misc.applyEnchants(player, blocks);
+				BlockBreakEvent e;
+				for (Block b : blocks) {
+					e = new BlockBreakEvent(b, player);
+					FortuneTeller.getInstance().onBlockBreak(e);
+					KeyFinder.getInstance().onBlockBreak(e);
+					TokenGreed.getInstance().onBlockBreak(e);
+				}
 				try (EditSession editSession = Fawe.instance().getWorldEdit().newEditSession(BukkitAdapter.adapt(world))) {
 					CuboidRegion reg = new CuboidRegion(BukkitAdapter.adapt(world),
 							BlockVector3.at(pointOne.getX(), pointOne.getY(), pointOne.getZ()),

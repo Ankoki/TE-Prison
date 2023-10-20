@@ -2,6 +2,7 @@ package com.ankoki.teprisons.utils;
 
 import com.ankoki.teprisons.enchants.FortuneTeller;
 import com.ankoki.teprisons.enchants.KeyFinder;
+import com.ankoki.teprisons.enchants.MysticLeveler;
 import com.ankoki.teprisons.enchants.TokenGreed;
 import com.vk2gpz.tokenenchant.api.CEHandler;
 import com.vk2gpz.tokenenchant.api.TokenEnchantAPI;
@@ -104,6 +105,7 @@ public class Misc {
 			FortuneTeller.getInstance().onBlockBreak(event);
 			KeyFinder.getInstance().onBlockBreak(event);
 			TokenGreed.getInstance().onBlockBreak(event);
+			MysticLeveler.getInstance().onBlockBreak(event);
 		}
 	}
 

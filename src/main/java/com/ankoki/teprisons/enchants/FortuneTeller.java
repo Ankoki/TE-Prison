@@ -16,28 +16,19 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import tech.mcprison.prison.cryptomorin.xseries.XMaterial;
 import tech.mcprison.prison.spigot.sellall.SellAllUtil;
 
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class FortuneTeller extends EnchantHandler {
 
-	private final TokenEnchantAPI api;
 	private static final List<String> BLOCKED_WORLDS = new ArrayList<>();
-	private Economy economy;
+	private static FortuneTeller instance;
+	private final TokenEnchantAPI api;
 	private final ConsoleCommandSender console = Bukkit.getConsoleSender();
+	private Economy economy;
 	private boolean debug;
 	private boolean disabled = false;
-
-	private static FortuneTeller instance;
-
-	/**
-	 * Gets the instance of FortuneTeller, used for calculating block break events
-	 * without heavy calls.
-	 * @return the instance.
-	 */
-	public static FortuneTeller getInstance() {
-		return instance;
-	}
 
 	public FortuneTeller(TokenEnchantAPI api) throws InvalidTokenEnchantException {
 		super(api);
@@ -56,6 +47,16 @@ public class FortuneTeller extends EnchantHandler {
 				this.loadConfig();
 			}
 		}
+	}
+
+	/**
+	 * Gets the instance of FortuneTeller, used for calculating block break events
+	 * without heavy calls.
+	 *
+	 * @return the instance.
+	 */
+	public static FortuneTeller getInstance() {
+		return instance;
 	}
 
 	@Override
@@ -80,31 +81,31 @@ public class FortuneTeller extends EnchantHandler {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	@EventPriorityHandler(key = "BlockBreakEvent")
 	public void onBlockBreak(BlockBreakEvent event) {
-		CompletableFuture.runAsync(() -> {
-			if (this.disabled) {
-				if (this.debug)
-					this.console.sendMessage("§eTE-Prison | this.disabled == true : BlockBreakEvent : FortuneTeller");
-				return;
-			}
-			Player player = event.getPlayer();
-			if (BLOCKED_WORLDS.contains(player.getWorld().getName())) {
-				if (debug)
-					this.console.sendMessage("§eTE-Prison | this.blockedWorlds.contains(player.getWorld()) == true : BlockBreakEvent : FortuneTeller");
-				return;
-			}
-			CEHandler handler = api.getEnchantment("FortuneTeller");
-			int level = handler.getCELevel(player);
-			XMaterial material = XMaterial.matchXMaterial(event.getBlock().getType());
-			HashMap<XMaterial, Integer> map = new HashMap<>();
-			map.put(material, 1);
-			double amount = SellAllUtil.get().getSellMoney(player, map);
+		if (this.disabled) {
+			if (this.debug)
+				this.console.sendMessage("§eTE-Prison | this.disabled == true : BlockBreakEvent : FortuneTeller");
+			return;
+		}
+		Player player = event.getPlayer();
+		if (BLOCKED_WORLDS.contains(player.getWorld().getName())) {
 			if (debug)
-				this.console.sendMessage("§eTE-Prison | SellAllUtil.get().getSellMoney(player, map) = " + amount + ": BlockBreakEvent : FortuneTeller");
-			amount *= 1 + (level / 10D);
-			if (debug)
-				this.console.sendMessage("§eTE-Prison | amount *= 1 + (level / 10D) = " + amount + ": BlockBreakEvent : FortuneTeller");
-			this.economy.depositPlayer(player, amount);
-		});
+				this.console.sendMessage("§eTE-Prison | this.blockedWorlds.contains(player.getWorld()) == true : BlockBreakEvent : FortuneTeller");
+			return;
+		}
+		CEHandler handler = api.getEnchantment("FortuneTeller");
+		int level = handler.getCELevel(player);
+		XMaterial material = XMaterial.matchXMaterial(event.getBlock().getType());
+		if (debug)
+			this.console.sendMessage("§eTE-Prison | XMaterial material = " + material.name() + " : BlockBreakEvent : FortuneTeller");
+		HashMap<XMaterial, Integer> map = new HashMap<>();
+		map.put(material, 1);
+		double amount = SellAllUtil.get().getSellMoney(player, map);
+		if (debug)
+			this.console.sendMessage("§eTE-Prison | SellAllUtil.get().getSellMoney(player, map) = " + amount + ": BlockBreakEvent : FortuneTeller");
+		amount *= 1 + (level / 10D);
+		if (debug)
+			this.console.sendMessage("§eTE-Prison | amount *= 1 + (level / 10D) = " + amount + ": BlockBreakEvent : FortuneTeller");
+		this.economy.depositPlayer(player, amount);
 	}
 
 }
