@@ -32,7 +32,6 @@ public class VirtualLaser extends EnchantHandler {
 	private static VirtualLaser instance;
 	private final List<String> BLOCKED_WORLDS = new ArrayList<>();
 	private final Random random = new Random();
-	private final TokenEnchantAPI api;
 	private final ConsoleCommandSender console = Bukkit.getConsoleSender();
 	private Economy economy;
 	private Color colour;
@@ -44,7 +43,6 @@ public class VirtualLaser extends EnchantHandler {
 	public VirtualLaser(TokenEnchantAPI api) throws InvalidTokenEnchantException {
 		super(api);
 		instance = this;
-		this.api = api;
 		try {
 			this.container = WorldGuard.getInstance().getPlatform().getRegionContainer();
 		} catch (Exception ex) { console.sendMessage("§cTE-Prison | WorldGuard not found. VirtualLaser will not work, and is made for A-Z mines."); }

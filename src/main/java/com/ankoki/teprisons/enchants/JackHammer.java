@@ -39,7 +39,6 @@ import java.util.UUID;
 
 public class JackHammer extends EnchantHandler {
 
-	private final TokenEnchantAPI api;
 	private final Random random = new Random();
 	private final ConsoleCommandSender console = Bukkit.getConsoleSender();
 	private RegionContainer container;
@@ -50,7 +49,6 @@ public class JackHammer extends EnchantHandler {
 
 	public JackHammer(TokenEnchantAPI api) throws InvalidTokenEnchantException {
 		super(api);
-		this.api = api;
 		try {
 			this.container = WorldGuard.getInstance().getPlatform().getRegionContainer();
 		} catch (Exception ex) { console.sendMessage("§cTE-Prison | WorldGuard not found. JackHammer will not work, and is made for A-Z mines."); }

@@ -21,7 +21,6 @@ public class FortuneTeller extends EnchantHandler {
 
 	private static final List<String> BLOCKED_WORLDS = new ArrayList<>();
 	private static FortuneTeller instance;
-	private final TokenEnchantAPI api;
 	private final ConsoleCommandSender console = Bukkit.getConsoleSender();
 	private Economy economy;
 	private boolean debug;
@@ -30,7 +29,6 @@ public class FortuneTeller extends EnchantHandler {
 	public FortuneTeller(TokenEnchantAPI api) throws InvalidTokenEnchantException {
 		super(api);
 		instance = this;
-		this.api = api;
 		if (Bukkit.getServer().getPluginManager().getPlugin("Vault") == null) {
 			console.sendMessage("§cTE-Prison | Vault was not found. FortuneTeller will not work.");
 			disabled = true;

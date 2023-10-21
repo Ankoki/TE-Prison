@@ -19,7 +19,6 @@ import java.util.concurrent.CompletableFuture;
 
 public class KeyFinder extends EnchantHandler {
 
-	private final TokenEnchantAPI api;
 	private static final List<String> BLOCKED_WORLDS = new ArrayList<>(), COMMANDS = new ArrayList<>();
 	private final Random random = new Random();
 	private final ConsoleCommandSender console = Bukkit.getConsoleSender();
@@ -40,7 +39,6 @@ public class KeyFinder extends EnchantHandler {
 	public KeyFinder(TokenEnchantAPI api) throws InvalidTokenEnchantException {
 		super(api);
 		instance = this;
-		this.api = api;
 		this.loadConfig();
 	}
 

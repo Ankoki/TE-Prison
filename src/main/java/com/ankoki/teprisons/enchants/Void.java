@@ -37,7 +37,6 @@ import java.util.Random;
 
 public class Void extends EnchantHandler {
 
-	private final TokenEnchantAPI api;
 	private final ConsoleCommandSender console = Bukkit.getConsoleSender();
 	private final Random random = new Random();
 	private final List<String> blockedWorlds = new ArrayList<>();
@@ -46,7 +45,6 @@ public class Void extends EnchantHandler {
 
 	public Void(TokenEnchantAPI api) throws InvalidTokenEnchantException {
 		super(api);
-		this.api = api;
 		try {
 			this.container = WorldGuard.getInstance().getPlatform().getRegionContainer();
 		} catch (Exception ex) { console.sendMessage("§cTE-Prison | WorldGuard not found. Void will not work, and is made for A-Z mines."); }
