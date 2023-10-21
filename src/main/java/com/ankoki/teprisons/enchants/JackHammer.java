@@ -1,5 +1,6 @@
 package com.ankoki.teprisons.enchants;
 
+import ch.njol.skript.variables.Variables;
 import com.ankoki.teprisons.utils.Misc;
 import com.fastasyncworldedit.core.Fawe;
 import com.sk89q.worldedit.EditSession;
@@ -34,6 +35,7 @@ import tech.mcprison.prison.spigot.game.SpigotPlayer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 public class JackHammer extends EnchantHandler {
 
@@ -86,7 +88,17 @@ public class JackHammer extends EnchantHandler {
 		}
 		if (this.container == null) {
 			if (this.debug)
-				this.console.sendMessage("§eTE-Prison | this.container == null: BlockBreakEvent : JackHammer");
+				this.console.sendMessage("§eTE-Prison | this.container == null : BlockBreakEvent : JackHammer");
+			return;
+		}
+		UUID uuid = player.getUniqueId();
+		Object object = Variables.getVariable("byeol::prisons::" + uuid + "::layer", null, false);
+		boolean layer = true;
+		if (object instanceof Boolean bool)
+			layer = bool;
+		if (!layer) {
+			if (this.debug)
+				this.console.sendMessage("§eTE-Prison | {byeol::prisons::" + uuid + "::layer} == false : BlockBreakEvent : JackHammer");
 			return;
 		}
 		if (Misc.isBlocked(player)) {
