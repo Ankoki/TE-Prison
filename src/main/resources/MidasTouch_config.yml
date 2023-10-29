@@ -1,0 +1,29 @@
+#plugin.author:Ankoki
+#plugin.url:https://github.com/Ankoki/TE-Prison
+#plugin.price:Free
+#
+dev-debug: false # Only used in development.
+Enchants:
+  MidasTouch:
+    alias: "§8• §eMidas Touch"
+    description: "Has a chance to replace a block with a sponge to run commands."
+    price: 10
+    max: 1000
+    blocked-worlds:
+      - plots
+    chance: 20000
+    command-amount: 2
+    commands: # Use placeholder {PLAYER} for the players name.
+      - [CONSOLE] crate key give {PLAYER} pear 3
+      - [CONSOLE] crate key give {PLAYER} pear 3
+      - [CONSOLE] te give {PLAYER} 3000000000
+      - [CONSOLE] te give {PLAYER} 3000000000
+      - [CONSOLE] te give {PLAYER} 3000000000
+      - [CONSOLE] te give {PLAYER} 3000000000
+      - [CONSOLE] eco give {PLAYER} 3000000000
+      - [CONSOLE] eco give {PLAYER} 3000000000
+      - [CONSOLE] crate key give {PLAYER} apple 2
+      - [CONSOLE] crate key give {PLAYER} apple 2
+      - [CONSOLE] crate key give {PLAYER} peach 1
+    event_map:
+      BlockBreakEvent: "HIGHEST"

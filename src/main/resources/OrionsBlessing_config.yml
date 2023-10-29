@@ -1,0 +1,13 @@
+#plugin.author:Ankoki
+#plugin.url:https://github.com/Ankoki/TE-Prison
+#plugin.price:Free
+#
+dev-debug: false # Only used in development.
+Enchants:
+  OrionsBlessing:
+    alias: "§8• §eOrion's Blessing"
+    description: "Will immediately break Midas Touch blocks for you."
+    price: 10
+    max: 1
+    event_map:
+      BlockBreakEvent: "HIGHEST"

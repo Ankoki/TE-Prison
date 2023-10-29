@@ -117,7 +117,7 @@ public class Void extends EnchantHandler {
 					this.console.sendMessage("§eTE-Prison | \"abcdefghijklmnopqrstuvwxyz\".contains(region.getId()) = false : BlockBreakEvent : Void");
 				continue;
 			}
-			int random = this.random.nextInt(0, 20000);
+			int random = this.random.nextInt(0, 35000);
 			if (random <= 50) {
 				this.console.sendMessage("§eTE-Prison | Player[" + player.getName() + "] procced Void : BlockBreakEvent : Void");
 				Location pointOne = BukkitAdapter.adapt(world, region.getMinimumPoint());
