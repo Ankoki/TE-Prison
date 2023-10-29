@@ -27,6 +27,8 @@ public class MidasTouch extends EnchantHandler {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	@EventPriorityHandler(key = "BlockBreakEvent")
 	public void onBlockBreak(BlockBreakEvent event) {
+		if (event.isCancelled())
+			return;
 
 	}
 

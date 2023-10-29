@@ -68,6 +68,8 @@ public class TokenGreed extends EnchantHandler {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	@EventPriorityHandler(key = "BlockBreakEvent")
 	public void onBlockBreak(BlockBreakEvent event) {
+		if (event.isCancelled())
+			return;
 		Player player = event.getPlayer();
 		if (BLOCKED_WORLDS.contains(player.getWorld().getName())) {
 			if (debug)

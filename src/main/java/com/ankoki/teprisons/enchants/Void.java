@@ -83,6 +83,8 @@ public class Void extends EnchantHandler {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	@EventPriorityHandler(key = "BlockBreakEvent")
 	private void onBlockBreak(BlockBreakEvent event) {
+		if (event.isCancelled())
+			return;
 		Player player = event.getPlayer();
 		int level = Misc.getEnchantmentLevel(player, "Void");
 		if (level <= 0)

@@ -77,6 +77,8 @@ public class JackHammer extends EnchantHandler {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	@EventPriorityHandler(key = "BlockBreakEvent")
 	private void onBlockBreak(BlockBreakEvent event) {
+		if (event.isCancelled())
+			return;
 		Player player = event.getPlayer();
 		int level = Misc.getEnchantmentLevel(player, "JackHammer");
 		if (level <= 0) {
@@ -119,7 +121,7 @@ public class JackHammer extends EnchantHandler {
 			return;
 		}
 		for (ProtectedRegion region : set.getRegions()) {
-			if (!Misc.isMine(region.getId())) {
+			if (!Misc.isMine(region.getId()) || region.getId().equalsIgnoreCase("void")) {
 				if (this.debug)
 					this.console.sendMessage("§eTE-Prison | \"abcdefghijklmnopqrstuvwxyz\".contains(region.getId()) = false : BlockBreakEvent : JackHammer");
 				continue;

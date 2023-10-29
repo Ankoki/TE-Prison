@@ -76,6 +76,8 @@ public class FortuneTeller extends EnchantHandler {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	@EventPriorityHandler(key = "BlockBreakEvent")
 	public void onBlockBreak(BlockBreakEvent event) {
+		if (event.isCancelled())
+			return;
 		if (this.disabled) {
 			if (this.debug)
 				this.console.sendMessage("§eTE-Prison | this.disabled == true : BlockBreakEvent : FortuneTeller");

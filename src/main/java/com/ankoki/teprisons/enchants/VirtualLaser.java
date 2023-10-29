@@ -108,6 +108,8 @@ public class VirtualLaser extends EnchantHandler {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	@EventPriorityHandler(key = "BlockBreakEvent")
 	public void onBlockBreak(BlockBreakEvent event) {
+		if (event.isCancelled())
+			return;
 		Player player = event.getPlayer();
 		int level = Misc.getEnchantmentLevel(player, "VirtualLaser");
 		if (level <= 0)
