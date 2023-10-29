@@ -15,15 +15,33 @@ import org.bukkit.event.block.BlockBreakEvent;
 import tech.mcprison.prison.cryptomorin.xseries.XMaterial;
 import tech.mcprison.prison.spigot.sellall.SellAllUtil;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class Misc {
 
 	private static final List<Player> blocked = new ArrayList<>();
 	private static final TokenEnchantAPI api = TokenEnchantAPI.getInstance();
+	private static final List<String> mines = new ArrayList<>();
+
+	static {
+		mines.addAll(Arrays.asList("abcdefghijklmnopqrstuvwxyz".split("")));
+		mines.add("void");
+		mines.add("p10");
+		mines.add("p25");
+		mines.add("p50");
+		mines.add("p100");
+		mines.add("p150");
+	}
+
+	/**
+	 * Checks if a given string is a registered mine.
+	 *
+	 * @param name the name.
+	 * @return true if a mine.
+	 */
+	public static boolean isMine(String name) {
+		return mines.contains(name);
+	}
 
 	/**
 	 * Blocks a player from using automated block breaking tasks.
@@ -187,6 +205,27 @@ public class Misc {
 		double[] xArr = {location.getBlockX(), location.getBlockX() + 1};
 		double[] yArr = {location.getBlockY(), location.getBlockY() + 1};
 		double[] zArr = {location.getBlockZ(), location.getBlockZ() + 1};
+		for (double x = xArr[0]; x < xArr[1]; x += step)
+			for (double y : yArr)
+				for (double z : zArr)
+					result.add(new Location(world, x, y, z));
+		for (double y = yArr[0]; y < yArr[1]; y += step)
+			for (double x : xArr)
+				for (double z : zArr)
+					result.add(new Location(world, x, y, z));
+		for (double z = zArr[0]; z < zArr[1]; z += step)
+			for (double x : xArr)
+				for (double y : yArr)
+					result.add(new Location(world, x, y, z));
+		return result;
+	}
+
+	public static List<Location> getHollowCube(Location pointOne, Location pointTwo, double step) {
+		List<Location> result = new ArrayList<>();
+		World world = pointOne.getWorld();
+		double[] xArr = {pointOne.getBlockX(), pointTwo.getBlockX()};
+		double[] yArr = {pointOne.getBlockY(), pointTwo.getBlockY()};
+		double[] zArr = {pointOne.getBlockZ(), pointTwo.getBlockZ()};
 		for (double x = xArr[0]; x < xArr[1]; x += step)
 			for (double y : yArr)
 				for (double z : zArr)

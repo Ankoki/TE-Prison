@@ -93,7 +93,7 @@ public class FortuneTeller extends EnchantHandler {
 		double amount = Misc.getValue(player, List.of(event.getBlock()));
 		if (debug)
 			this.console.sendMessage("§eTE-Prison | Misc.getValue(player, List.of(event.getBlock()) = " + amount + ": BlockBreakEvent : FortuneTeller");
-		amount *= 1 + (level / 10D);
+		amount *= 1 + (level / 5D);
 		if (debug)
 			this.console.sendMessage("§eTE-Prison | amount *= 1 + (level / 10D) = " + amount + ": BlockBreakEvent : FortuneTeller");
 		this.economy.depositPlayer(player, amount);

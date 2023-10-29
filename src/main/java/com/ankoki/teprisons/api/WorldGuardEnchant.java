@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 public abstract class WorldGuardEnchant extends CustomEnchant {
 
 	private RegionContainer container;
+	private boolean disabled;
 
 	/**
 	 * Creates a new custom enchant that relies on world guard.
@@ -23,8 +24,19 @@ public abstract class WorldGuardEnchant extends CustomEnchant {
 		super(api, name, version);
 		try {
 			this.container = WorldGuard.getInstance().getPlatform().getRegionContainer();
-		} catch (Exception ex) { this.console.sendMessage("§cTE-Prison | WorldGuard not found. Enchant '" + name + "' will not work."); }
+		} catch (Exception ex) {
+			this.console.sendMessage("§cTE-Prison | WorldGuard not found. Enchant '" + name + "' will not work.");
+			this.disabled = true;
+		}
+	}
 
+	/**
+	 * Checks if WorldGuard was able to be found.
+	 *
+	 * @return false if found, true if not.
+	 */
+	public boolean isDisabled() {
+		return disabled;
 	}
 
 	/**

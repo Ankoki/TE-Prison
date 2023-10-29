@@ -142,7 +142,7 @@ public class VirtualLaser extends EnchantHandler {
 			return;
 		}
 		for (ProtectedRegion region : set.getRegions()) {
-			if (!"abcdefghijklmnopqrstuvwxyz".contains(region.getId())) {
+			if (!Misc.isMine(region.getId())) {
 				if (this.debug)
 					this.console.sendMessage("§eTE-Prison | \"abcdefghijklmnopqrstuvwxyz\".contains(region.getId()) = false : BlockBreakEvent : VirtualLaser");
 				continue;
