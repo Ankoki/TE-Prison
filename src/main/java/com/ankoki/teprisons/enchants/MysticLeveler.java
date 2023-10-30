@@ -46,6 +46,7 @@ public class MysticLeveler extends EnchantHandler {
 		UPGRADABLE_ENCHANTS.add("FortuneTeller");
 		UPGRADABLE_ENCHANTS.add("JackHammer");
 		UPGRADABLE_ENCHANTS.add("TokenGreed");
+		UPGRADABLE_ENCHANTS.add("VirtualLaser");
 		UPGRADABLE_ENCHANTS.add("KeyFinder");
 		UPGRADABLE_ENCHANTS.add("Efficiency");
 		UPGRADABLE_ENCHANTS.add("MidasTouch");
