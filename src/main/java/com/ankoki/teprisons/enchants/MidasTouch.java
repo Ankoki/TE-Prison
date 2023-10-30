@@ -20,6 +20,12 @@ import java.util.Random;
 
 public class MidasTouch extends EnchantHandler {
 
+	public static MidasTouch getInstance() {
+		return instance;
+	}
+
+	private static MidasTouch instance;
+
 	private final Random random = new Random();
 	private final List<String> commands = new ArrayList<>();
 	private int chance;
@@ -29,6 +35,8 @@ public class MidasTouch extends EnchantHandler {
 
 	public MidasTouch(TokenEnchantAPI api) throws InvalidTokenEnchantException {
 		super(api);
+		this.loadConfig();
+		instance = this;
 	}
 
 	@Override
@@ -52,12 +60,14 @@ public class MidasTouch extends EnchantHandler {
 		this.commandAmount = this.getConfig().getInt("Enchants.MidasTouch.command-amount");
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	@EventPriorityHandler(key = "BlockBreakEvent")
 	public void onBlockBreak(BlockBreakEvent event) {
 		if (event.isCancelled())
 			return;
 		Player player = event.getPlayer();
+		if (Misc.isBlocked(player))
+			return;
 		int level = Misc.getEnchantmentLevel(player, "MidasTouch");
 		if (level <= 0)
 			return;
@@ -67,10 +77,11 @@ public class MidasTouch extends EnchantHandler {
 		if (this.midasBlocks.contains(block)) {
 			this.midasBlocks.remove(block);
 			this.runCommands(player);
+			event.setDropItems(false);
 			return;
 		}
 		int chance = this.random.nextInt(1, this.chance);
-		if (chance >= 3 + (level * 2)) {
+		if (chance <= 3 + (level * 2)) {
 			if (Misc.getEnchantmentLevel(player, "OrionsBlessing") == 1) {
 				this.runCommands(player);
 				return;
@@ -90,13 +101,7 @@ public class MidasTouch extends EnchantHandler {
 		Collections.shuffle(this.commands);
 		for (int i = 0; i < Math.min(this.commands.size(), this.commandAmount); i++) {
 			String command = this.commands.get(i);
-			if (command.startsWith("[CONSOLE] "))
-				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command
-						.replaceFirst("[CONSOLE] ", "")
-						.replace("{PLAYER}", player.getName()));
-			else
-				player.performCommand(command
-						.replace("{PLAYER}", player.getName()));
+			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command.replace("{PLAYER}", player.getName()));
 		}
 	}
 

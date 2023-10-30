@@ -10,6 +10,7 @@ public class OrionsBlessing extends EnchantHandler {
 
 	public OrionsBlessing(TokenEnchantAPI tokenEnchantAPI) throws InvalidTokenEnchantException {
 		super(tokenEnchantAPI);
+		this.loadConfig();
 	}
 
 	@Override

@@ -48,6 +48,7 @@ public class MysticLeveler extends EnchantHandler {
 		UPGRADABLE_ENCHANTS.add("TokenGreed");
 		UPGRADABLE_ENCHANTS.add("KeyFinder");
 		UPGRADABLE_ENCHANTS.add("Efficiency");
+		UPGRADABLE_ENCHANTS.add("MidasTouch");
 		this.api = api;
 		this.loadConfig();
 	}
@@ -85,18 +86,13 @@ public class MysticLeveler extends EnchantHandler {
 			int level = Misc.getEnchantmentLevel(player, "MysticLeveler");
 			if (level <= 0)
 				return;
-			if (Misc.isBlocked(player)) {
-				if (debug)
-					this.console.sendMessage("§eTE-Prison | Misc.isBlocked(player) == true : BlockBreakEvent : MysticLeveler");
-				return;
-			}
 			if (BLOCKED_WORLDS.contains(player.getWorld().getName())) {
 				if (debug)
 					this.console.sendMessage("§eTE-Prison | this.blockedWorlds.contains(player.getWorld()) == true : BlockBreakEvent : MysticLeveler");
 				return;
 			}
 			if (this.upperBound <= 1)
-				this.upperBound = 1000000;
+				this.upperBound = 100000;
 			if (debug)
 				this.console.sendMessage("§eTE-Prison | this.upperbound = " + this.upperBound + " : BlockBreakEvent : MysticLeveler");
 			int random = this.random.nextInt(1, this.upperBound);
@@ -107,21 +103,24 @@ public class MysticLeveler extends EnchantHandler {
 				String enchant = UPGRADABLE_ENCHANTS.get(0);
 				CEHandler ench = api.getEnchantment(enchant);
 				int max = ench.getMaxLevel();
-				int l = ench.getCELevel(player);
-				int updated = max + l;
+				int current = ench.getCELevel(player);
+				int l = this.getCELevel(player);
+				int updated = current + l;
 				if (updated > max) {
 					if (debug)
 						this.console.sendMessage("§eTE-Prison | updated [" + updated + "] > max [" + max + "] == true : BlockBreakEvent : MysticLeveler");
 				} else {
 					UUID uuid = player.getUniqueId();
 					Variables.setVariable("byeol::prisons::" + uuid + "::enchants::" + enchant, updated, event, false);
-					FunctionReference<?> reference = new SkriptParser("pickaxe_refreshPickaxe(player)", SkriptParser.ALL_FLAGS)
+					Variables.setVariable("byeol-mysticleveler", player, event, true);
+					FunctionReference<?> reference = new SkriptParser("pickaxe_refreshPickaxe({_byeol-mysticleveler})", SkriptParser.ALL_FLAGS)
 							.parseFunction((Class<?>[]) null);
 					if (reference == null) {
 						this.console.sendMessage("§cTE-Prison | reference == null : BlockBreakEvent : MysticLeveler");
 						return;
 					}
-					new EffFunctionCall(reference).run(event);
+					Bukkit.getScheduler().runTask(this.api, () -> new EffFunctionCall(reference).run(event));
+					player.sendActionBar("§e§l+" + l + " Levels of " + enchant);
 				}
 			}
 		});

@@ -9,7 +9,7 @@ Enchants:
     description: "Has a tiny chance to upgrade any non prestige-locked enchant by the level of this enchant."
     price: 10
     max: 10
-    upper-bound: 1000000
+    upper-bound: 100000
     blocked-worlds:
       - plots
     event_map:

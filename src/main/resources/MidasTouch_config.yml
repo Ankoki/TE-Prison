@@ -11,19 +11,19 @@ Enchants:
     max: 1000
     blocked-worlds:
       - plots
-    chance: 20000
+    chance: 25000
     command-amount: 2
     commands: # Use placeholder {PLAYER} for the players name.
-      - [CONSOLE] crate key give {PLAYER} pear 3
-      - [CONSOLE] crate key give {PLAYER} pear 3
-      - [CONSOLE] te give {PLAYER} 3000000000
-      - [CONSOLE] te give {PLAYER} 3000000000
-      - [CONSOLE] te give {PLAYER} 3000000000
-      - [CONSOLE] te give {PLAYER} 3000000000
-      - [CONSOLE] eco give {PLAYER} 3000000000
-      - [CONSOLE] eco give {PLAYER} 3000000000
-      - [CONSOLE] crate key give {PLAYER} apple 2
-      - [CONSOLE] crate key give {PLAYER} apple 2
-      - [CONSOLE] crate key give {PLAYER} peach 1
+      - crate key give {PLAYER} pear 3
+      - crate key give {PLAYER} pear 3
+      - te give {PLAYER} 3000000000
+      - te give {PLAYER} 3000000000
+      - te give {PLAYER} 3000000000
+      - te give {PLAYER} 3000000000
+      - eco give {PLAYER} 3000000000
+      - eco give {PLAYER} 3000000000
+      - crate key give {PLAYER} apple 2
+      - crate key give {PLAYER} apple 2
+      - crate key give {PLAYER} peach 1
     event_map:
       BlockBreakEvent: "HIGHEST"

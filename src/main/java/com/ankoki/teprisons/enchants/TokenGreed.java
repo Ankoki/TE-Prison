@@ -82,8 +82,8 @@ public class TokenGreed extends EnchantHandler {
 				this.console.sendMessage("§eTE-Prison | level <= 1 && defaultTokens == " + defaultTokens + " == true : BlockBreakEvent : TokenGreed");
 			this.api.addTokens(player, defaultTokens);
 		} else {
-			int above = (int) (tokenIncrease + (level * 6));
-			int below = (int) (tokenIncrease - 1);
+			int above = (int) (tokenIncrease + (level * 7));
+			int below = (int) (tokenIncrease + (level * 4));
 			int random = this.random.nextInt(below, above + 1);
 			if (debug)
 				this.console.sendMessage("§eTE-Prison | random == " + random + " && random + (level * 2) == " + random + (level * 2) + " == true : BlockBreakEvent : TokenGreed");
