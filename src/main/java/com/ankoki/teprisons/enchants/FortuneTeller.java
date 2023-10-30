@@ -98,7 +98,7 @@ public class FortuneTeller extends EnchantHandler {
 		amount *= 1 + (level / 5D);
 		if (debug)
 			this.console.sendMessage("§eTE-Prison | amount *= 1 + (level / 10D) = " + amount + ": BlockBreakEvent : FortuneTeller");
-		this.economy.depositPlayer(player, amount);
+		this.economy.depositPlayer(player, Misc.applyMultiplier(player, amount));
 	}
 
 }

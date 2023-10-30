@@ -144,6 +144,25 @@ public class Misc {
 	}
 
 	/**
+	 * Applies a multiplier to the player if they have it.
+	 *
+	 * @param player the player.
+	 * @param starting the starting amount.
+	 * @return the multiplied amount.
+	 */
+	public static double applyMultiplier(Player player, double starting) {
+		if (player.hasPermission("byeol.multiplier.1.5"))
+			starting *= 1.5;
+		if (player.hasPermission("byeol.multiplier.2"))
+			starting *= 2;
+		if (player.hasPermission("byeol.multiplier.season.1.5"))
+			starting *= 1.5;
+		if (player.hasPermission("byeol.multiplier.season.2"))
+			starting *= 2;
+		return starting;
+	}
+
+	/**
 	 * Gets blocks which would be obtained through a laser.
 	 *
 	 * @param start the block that proceed this enchants.
