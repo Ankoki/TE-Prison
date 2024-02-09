@@ -12,7 +12,10 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.inventory.ItemStack;
 import tech.mcprison.prison.cryptomorin.xseries.XMaterial;
+import tech.mcprison.prison.spigot.block.SpigotItemStack;
+import tech.mcprison.prison.spigot.game.SpigotPlayer;
 import tech.mcprison.prison.spigot.sellall.SellAllUtil;
 
 import java.util.*;
@@ -199,16 +202,13 @@ public class Misc {
 	 * @return the amount these blocks are worth.
 	 */
 	public static double getValue(Player player, List<Block> blocks) {
-		HashMap<XMaterial, Integer> map = new HashMap<>();
+		SpigotPlayer sPlayer = new SpigotPlayer(player);
+		double amount = 0;
 		for (Block block : blocks) {
-			XMaterial material = XMaterial.matchXMaterial(block.getType());
-			if (map.containsKey(material)) {
-				int amount = map.get(material);
-				map.put(material, amount + 1);
-			} else
-				map.put(material, 1);
+			SpigotItemStack item = new SpigotItemStack(new ItemStack(block.getType()));
+			amount += SellAllUtil.get().getItemStackValue(sPlayer, item);
 		}
-		return SellAllUtil.get().getSellMoney(player, map);
+		return amount;
 	}
 
 	/**
