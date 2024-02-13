@@ -28,6 +28,7 @@ public class Misc {
 
 	static {
 		mines.addAll(Arrays.asList("abcdefghijklmnopqrstuvwxyz".split("")));
+		mines.add("z2");
 		mines.add("void");
 		mines.add("p10");
 		mines.add("p25");
@@ -43,7 +44,7 @@ public class Misc {
 	 * @return true if a mine.
 	 */
 	public static boolean isMine(String name) {
-		return mines.contains(name);
+		return mines.contains(name.toLowerCase());
 	}
 
 	/**

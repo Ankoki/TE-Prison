@@ -1,6 +1,12 @@
 package com.ankoki.teprisons.enchants;
 
 import com.ankoki.teprisons.utils.Misc;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
+import com.sk89q.worldguard.protection.regions.RegionQuery;
 import com.vk2gpz.tokenenchant.api.EnchantHandler;
 import com.vk2gpz.tokenenchant.api.InvalidTokenEnchantException;
 import com.vk2gpz.tokenenchant.api.TokenEnchantAPI;
@@ -32,9 +38,13 @@ public class MidasTouch extends EnchantHandler {
 	private int commandAmount;
 	private final List<String> blockedWorlds = new ArrayList<>();
 	private final List<Block> midasBlocks = new ArrayList<>();
+	private RegionContainer container;
 
 	public MidasTouch(TokenEnchantAPI api) throws InvalidTokenEnchantException {
 		super(api);
+		try {
+			this.container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+		} catch (Exception ex) { Bukkit.getConsoleSender().sendMessage("§cTE-Prison | WorldGuard not found. MidasTouch will not work, and is made for A-Z mines."); }
 		this.loadConfig();
 		instance = this;
 	}
@@ -60,7 +70,7 @@ public class MidasTouch extends EnchantHandler {
 		this.commandAmount = this.getConfig().getInt("Enchants.MidasTouch.command-amount");
 	}
 
-	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.LOWEST)
 	@EventPriorityHandler(key = "BlockBreakEvent")
 	public void onBlockBreak(BlockBreakEvent event) {
 		if (event.isCancelled())
@@ -74,21 +84,30 @@ public class MidasTouch extends EnchantHandler {
 		Block block = event.getBlock();
 		if (this.blockedWorlds.contains(player.getWorld().getName()))
 			return;
-		if (this.midasBlocks.contains(block)) {
-			this.midasBlocks.remove(block);
-			this.runCommands(player);
-			event.setDropItems(false);
+		RegionQuery query = this.container.createQuery();
+		ApplicableRegionSet set = query.getApplicableRegions(BukkitAdapter.adapt(block.getLocation()));
+		if (set == null)
 			return;
-		}
-		int chance = this.random.nextInt(1, this.chance);
-		if (chance <= 3 + (level * 2)) {
-			if (Misc.getEnchantmentLevel(player, "OrionsBlessing") == 1) {
+		for (ProtectedRegion region : set.getRegions()) {
+			if (!Misc.isMine(region.getId()))
+				continue;
+			if (this.midasBlocks.contains(block)) {
+				this.midasBlocks.remove(block);
 				this.runCommands(player);
+				event.setDropItems(false);
 				return;
 			}
-			event.setCancelled(true);
-			block.setType(Material.SPONGE);
-			this.midasBlocks.add(block);
+			int chance = this.random.nextInt(1, this.chance);
+			if (chance <= 3 + (level * 2)) {
+				if (Misc.getEnchantmentLevel(player, "OrionsBlessing") >= 1) {
+					this.runCommands(player);
+					return;
+				}
+				event.setCancelled(true);
+				block.setType(Material.SPONGE);
+				this.midasBlocks.add(block);
+			}
+			break;
 		}
 	}
 
